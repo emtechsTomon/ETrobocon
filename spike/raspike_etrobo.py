@@ -23,11 +23,13 @@ port_map = {
 
 
 # Device objects
-
+print("hub.display.show()")#
 hub.display.show(hub.Image.ALL_CLOCKS,delay=400,clear=True,wait=False,loop=True,fade=0)
 
 # reset gyro
+print("hub.motion.align_to_model()")#
 hub.motion.align_to_model(hub.FRONT,hub.TOP)
+print("hub.motion.yaw_pitch_roll()")#
 hub.motion.yaw_pitch_roll(0)
 time.sleep(1)
 
@@ -35,6 +37,7 @@ while True:
     motor_A = getattr(hub.port, port_map["motor_A"]).motor
     motor_B = getattr(hub.port, port_map["motor_B"]).motor
     motor_C = getattr(hub.port, port_map["motor_C"]).motor
+    print("color_sensor =getattr()")#
     color_sensor = getattr(hub.port, port_map["color_sensor"]).device
     ultrasonic_sensor = getattr(hub.port, port_map["ultrasonic_sensor"]).device
     motor_rot_A = getattr(hub.port, port_map["motor_A"]).device
@@ -49,7 +52,9 @@ while True:
         or color_sensor is None
         or ultrasonic_sensor is None
     ):
+        print("SOMETHING is None")#
         continue
+    print("ALL getattr() OK")#
     break
 
 # モーターの回転を逆にして指定したい場合、以下に-1を設定してください
@@ -65,6 +70,7 @@ last_command_time = 0
 #通信断絶を検知する時間
 detect_com_fail_period = 5000000
 
+print("motor_rot_A.mode()")#
 motor_rot_A.mode(2)
 motor_rot_B.mode(2)
 motor_rot_C.mode(2)
@@ -80,6 +86,7 @@ def detect_com_fail():
 
 
 def wait_serial_ready():
+    print("in wait_serial_ready()")#
     while True:
         reply = ser.read(1000)
         print(reply)
@@ -88,6 +95,7 @@ def wait_serial_ready():
 
 
 async def wait_read(ser, size):
+    print("in wait_read()")#
     global last_command_time
     while True:
         buf = ser.read(size)
@@ -121,6 +129,7 @@ gyro_angle = 0
 gyro_sensor_mode_change = 0
 
 async def receiver():
+    print("in receiver()")#
     global num_command, num_fail, count, sum_time, prev_time
     global motor_reset_A,motor_reset_B,motor_reset_C,color_sensor_change,gyro_reset,other_command,ultrasonic_sensor_change,gyro_sensor_mode
     global gyro_angle,gyro_sensor_mode_change,last_command_time
@@ -264,6 +273,7 @@ async def receiver():
 
 
 async def send_data(cmd, val):
+    print("in send_data()")#
     sendData = "@{:0=4}:{:0=6}".format(cmd, int(val))
     #print(sendData)
     ser.write(sendData)
@@ -271,6 +281,7 @@ async def send_data(cmd, val):
     await uasyncio.sleep(0.0005)
 
 async def send_ack(cmd):
+    print("in send_ack")#
     sendData = "<{:0=4}:000000".format(cmd)
     #print(sendData)
     ser.write(sendData)
@@ -302,30 +313,40 @@ async def notifySensorValues():
         # カラーセンサーの切り替えがあった場合、タイミングによってはget()がNoneになったり、
         # RGBではない値が取れたりするので、その場合は次の周期で通知する
         if color_sensor_mode == 1:
+            print("color_sensor_mode: 1")#
             color_val = color_sensor.get()
             if color_val is not None:
             # ambient
+                print("send_data()")#
                 await send_data(1, color_val[0])
         elif color_sensor_mode == 2:
+            print("color_sensor_mode: 4")#
             color_val = color_sensor.get()
             if color_val is not None:
                 # color
                 # TODO:Convert to EV3 Value
+                print("send_data()")#
                 await send_data(2, color_val[0])
         elif color_sensor_mode == 3:
+            print("color_sensor_mode: 3")#
             color_val = color_sensor.get()
             if color_val is not None:
             # Reflect
+                print("send_data()")#
                 await send_data(3, color_val[0])
         elif color_sensor_mode == 4:
+            print("color_sensor_mode: 4")#
             color_val = color_sensor.get()
             if color_val[0] is not None and len(color_val) == 4 and color_val[2] is not None:
+                print("color_val[0] is not None")#
                 r = color_val[0]
                 g = color_val[1]
                 b = color_val[2]
                 await send_data(4, r / 4)
                 await send_data(5, g / 4)
                 await send_data(6, b / 4)
+        else:#
+            print("color_sensor_mode: " + color_sensor_mode)#
 
         # 超音波センサー
         if ultrasonic_sensor_mode == 1:
@@ -435,8 +456,11 @@ def stop_all():
 
 
 async def main_task():
+    print("gc.collect()")#
     gc.collect()
+    print("uasyncio.create_task(notifySensorValues())")#
     uasyncio.create_task(notifySensorValues())
+    print("uasyncio.create_task(receiver())")#
     uasyncio.create_task(receiver())
     await uasyncio.sleep(10*60)
     global num_command, num_fail, count, sum_time, count
@@ -451,16 +475,23 @@ async def main_task():
 
 if True:
 
+    print("image = Image()")#
     image = Image("99999:90090:99090:90090:99090")
+    print("display.show()")#
     display.show(image)
 
     print(" -- serial init -- ")
+    print("ser = gettattr()")#
     ser = getattr(hub.port, spike_serial_port)
 
+    print("ser.mode()")#
     ser.mode(hub.port.MODE_FULL_DUPLEX)
     time.sleep(1)
+    print("ser.baud()")#
     ser.baud(115200)
 
+    print("wait_serial_ready()")#
     wait_serial_ready()
 
+    print("uasyncio.run()")#
     uasyncio.run(main_task())
