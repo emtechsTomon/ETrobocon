@@ -52,7 +52,16 @@ while True:
         or color_sensor is None
         or ultrasonic_sensor is None
     ):
-        print("SOMETHING is None")#
+        if (motor_A is None):#
+            print("motor_A is None")#
+        if (motor_B is None):#
+            print("motor_B is None")#
+        if (motor_C is None):#
+            print("motor_C is None")#
+        if (color_sensor is None):#
+            print("color_sensor is None")#
+        if (ultrasonic_sensor is None):#
+            print("ultrasonic_sensor is None")#
         continue
     print("ALL getattr() OK")#
     break
@@ -160,7 +169,7 @@ async def receiver():
                 if data1 & 0x80:
                     cmd = data1
                     num_fail = num_fail + 1
-                    print ("data1 broken")
+                    print("data1 broken")
                     continue
                 idx = cmd & 0x7F
 
@@ -168,7 +177,7 @@ async def receiver():
                 if data2 & 0x80:
                     cmd = data2
                     num_fail = num_fail + 1
-                    print ("data2 broken")
+                    print("data2 broken")
                     continue
 
                 cmd_id = idx
@@ -179,7 +188,7 @@ async def receiver():
 
                 break
 
-            #print('cmd=%d,value=%d' %(cmd_id,value))
+            print('cmd=%d,value=%d' %(cmd_id,value))
             if value < -2048 or value > 2048:
                 #                print("Value is invalid")
                 num_fail = num_fail + 1
@@ -275,7 +284,7 @@ async def receiver():
 async def send_data(cmd, val):
     print("in send_data()")#
     sendData = "@{:0=4}:{:0=6}".format(cmd, int(val))
-    #print(sendData)
+    print(sendData)
     ser.write(sendData)
     #高速で送るとパケットが落ちるため、0.5msec休ませる
     await uasyncio.sleep(0.0005)
@@ -283,7 +292,7 @@ async def send_data(cmd, val):
 async def send_ack(cmd):
     print("in send_ack")#
     sendData = "<{:0=4}:000000".format(cmd)
-    #print(sendData)
+    print(sendData)
     ser.write(sendData)
     #高速で送るとパケットが落ちるため、0.5msec休ませる
     await uasyncio.sleep(0.0005)
@@ -346,7 +355,7 @@ async def notifySensorValues():
                 await send_data(5, g / 4)
                 await send_data(6, b / 4)
         else:#
-            print("color_sensor_mode: " + color_sensor_mode)#
+            print("color_sensor_mode: " + str(color_sensor_mode))#
 
         # 超音波センサー
         if ultrasonic_sensor_mode == 1:
@@ -357,6 +366,8 @@ async def notifySensorValues():
             await send_data(22, val)
         elif ultrasonic_sensor_mode == 2:
            await send_data(23, ultrasonic_sensor.get())
+        else:#
+            print("ultrasonic_sensor_mode: " + str(ultrasonic_sensor_mode))#
 
         # モーター出力
         await send_data(64, motor_rot_A.get()[0] * invert_A)
@@ -372,6 +383,7 @@ async def notifySensorValues():
 
         #タッチセンサー
         val = touch_sensor.is_pressed()
+        print("val = touch_sensor.is_pressed(): " + str(val))#
         if touch_sensor_value != val :
             touch_sensor_value = val
             sendVal = 0
@@ -447,6 +459,8 @@ async def notifySensorValues():
         if time_diff < 0:
             time_diff = 0
         await uasyncio.sleep_ms(int(time_diff / 1000))
+      
+        print("while: end")#
 
 
 def stop_all():
