@@ -159,8 +159,9 @@ async def receiver():
                 cmd = int.from_bytes(await wait_read(ser, 1), "big")
                 if cmd & 0x80:
                     # Found Header
-                    #                print("Header Found")
+                    print("Header Found")
                     break
+                print("Header Not Found")
 
                 # Get ID
             while True:
@@ -190,7 +191,7 @@ async def receiver():
 
             print('cmd=%d,value=%d' %(cmd_id,value))
             if value < -2048 or value > 2048:
-                #                print("Value is invalid")
+                print("Value is invalid")
                 num_fail = num_fail + 1
                 continue
 
@@ -251,7 +252,7 @@ async def receiver():
                     color_sensor.mode(1)
                 elif value == 4:
                     # RGB
-                    #print("Set RGB")
+                    print("Set RGB")
                     color_sensor.mode(5)
                 #ダミーリード
                 cv = color_sensor.get()

@@ -57,6 +57,8 @@
 extern "C" {
 #endif
 
+#define DBG_PRINT(...)     printf("%s(%d) %s:", __FILE__, __LINE__, __func__), printf(__VA_ARGS__)
+
 /*
  *	TOPPERS共通のデータ型・定数・マクロ
  */
@@ -223,6 +225,7 @@ sil_rew_mem(const uint32_t *mem)
 Inline void
 sil_wrw_mem(uint32_t *mem, uint32_t data)
 {
+  DBG_PRINT("mem=%p, data=%u", mem, data);
 	*((volatile uint32_t *) mem) = data;
 	SilCallWriteHook(4,(uint32)mem,&data);
 }

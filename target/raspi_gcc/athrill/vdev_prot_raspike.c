@@ -15,6 +15,8 @@
 #include "sil.h"
 #include "ev3_vdev.h"
 
+#define DBG_PRINT(...)     printf("%s(%d) %s:", __FILE__, __LINE__, __func__), printf(__VA_ARGS__)
+
 static uint32 reset_area_off = 0;
 static uint32 reset_area_size  = 0; 
 
@@ -79,9 +81,10 @@ static char previous_sent_buffer[VDEV_TX_DATA_SIZE];
 
 #define RASPIKE_NOT_USED (999999)
 static void raspike_uart_wait_mode_change(uint8_t port,uint8_t mode, uint32_t *check_addr)
-{
+{ 
 
-  /* まずvalueを通信上使われない999999に変更する */
+  DBG_PRINT("\n");
+  /* まずvalueを通信上使われない999999に変更する */ 
   sil_wrw_mem(check_addr,RASPIKE_NOT_USED);
 
   /* モードチェンジのコマンドを送出する*/
