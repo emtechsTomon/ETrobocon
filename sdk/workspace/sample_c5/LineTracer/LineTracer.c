@@ -8,7 +8,7 @@ static void motor_drive_control(int16_t);
 
 /* ライントレースタスク(100msec周期で関数コールされる) */
 void tracer_task(intptr_t unused) {
-
+    printf("in tracer_task()\n");
     int16_t steering_amount; /* ステアリング操舵量の計算 */
     
     /* ステアリング操舵量の計算 */
@@ -33,10 +33,12 @@ static int16_t steering_amount_calculation(void){
     target_brightness = (WHITE_BRIGHTNESS - BLACK_BRIGHTNESS) / 2;
 
     /* カラーセンサ値の取得 */
+    printf("ev3_color_sensor_get_rgb_raw()\n");
     ev3_color_sensor_get_rgb_raw(color_sensor, &rgb_val);
 
     /* 目標輝度値とカラーセンサ値の差分を計算 */
     diff_brightness = (float32_t)(target_brightness - rgb_val.g);
+    diff_brightness = (float32_t)(target_brightness - 50);
 
     /* ステアリング操舵量を計算 */
     steering_amount = (int16_t)(diff_brightness * STEERING_COEF);

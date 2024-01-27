@@ -242,6 +242,7 @@ static RasPikeCommand send_order[] = {
 /* IOメモリへの書き込み */
 Std_ReturnType vdevProtRaspikeSilCb(int size, uint32 addr, void *data)
 {
+  printf("in vdevProtRaspikeSlibCb(size=%d, addr=%lu, data=%p)\n", size, addr, data);
   int len;
   static int is_first_call = 0;
 
@@ -251,6 +252,7 @@ Std_ReturnType vdevProtRaspikeSilCb(int size, uint32 addr, void *data)
        このタイミングよりも前にやると、センサー値の変更のポーリングが永久に
        待つことがある
     */
+    printf("uart_set_wait_mode_change_func(raspike_uart_wait_mode_change)\n");
     uart_set_wait_mode_change_func(raspike_uart_wait_mode_change);
     is_first_call = 1;
   }

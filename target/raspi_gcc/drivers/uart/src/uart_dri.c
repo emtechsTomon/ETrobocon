@@ -19,10 +19,13 @@ static void uart_wait_mode_change(uint8_t port,uint8_t mode, uint32_t *check_add
 {
 
 
+  printf("uart_wait_mode_change(port=%d, mode=%d, check_addr=%p)\n", port, mode, check_addr);
   uint8_t current_mode = sil_rew_mem((uint32_t *)EV3_SENSOR_MODE_INX(port));
+  printf("current_mode: %d\n", current_mode);
   if ( current_mode != mode ) {
     /* モードが切り替わった*/
     if ( fg_wait_mode_change_func ) {
+      printf("fg_wait_mode_change_func()\n");
       fg_wait_mode_change_func(port,mode,check_addr);
     }
   }
@@ -120,6 +123,7 @@ typedef enum {
 
 void uart_dri_get_data_color(uint8_t port,uint8_t index, uint8_t mode, void *dest, SIZE size)
 {
+        printf("uart_dri_get_data_color(port=%d, index=%d, mode=%d, dest=%p, size=%d)\n", port, index, mode, dest, size);
 	uint8_t *data8 = (uint8_t*)dest;
 	uint16_t *array = (uint16_t*)dest;
 	DRI_COLOR_SENSOR_MODES dri_mode = mode;
@@ -135,10 +139,14 @@ void uart_dri_get_data_color(uint8_t port,uint8_t index, uint8_t mode, void *des
 	  uart_wait_mode_change(port,mode,(uint32_t*)EV3_SENSOR_ADDR_COLOR(index));	  
 	  *data8 = (uint8_t)sil_rew_mem( (const uint32_t *)EV3_SENSOR_ADDR_COLOR(index));
 	} else {
-	  uart_wait_mode_change(port,mode,(uint32_t*)EV3_SENSOR_ADDR_RGB_R(index));	  
+          printf("uart_wait_mode_change()\n");
+	  uart_wait_mode_change(port,mode,(uint32_t*)EV3_SENSOR_ADDR_RGB_R(index));
 	  array[0] = (uint16_t)sil_rew_mem( (const uint32_t *)EV3_SENSOR_ADDR_RGB_R(index));
+          printf("array[0]: %d", array[0]);  
 	  array[1] = (uint16_t)sil_rew_mem( (const uint32_t *)EV3_SENSOR_ADDR_RGB_G(index));
+          printf("array[1]: %d", array[1]);  
 	  array[2] = (uint16_t)sil_rew_mem( (const uint32_t *)EV3_SENSOR_ADDR_RGB_B(index));
+          printf("array[2]: %d", array[2]);  
 	}
 	return;
 }
