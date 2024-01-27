@@ -3,7 +3,7 @@
 
 /* メインタスク(起動時にのみ関数コールされる) */
 void main_task(intptr_t unused) {
-
+    printf("in main_task()\n");
     /* センサー入力ポートの設定 */
     ev3_sensor_config(touch_sensor ,TOUCH_SENSOR);
     ev3_sensor_config(color_sensor ,COLOR_SENSOR);
