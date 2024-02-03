@@ -19,10 +19,10 @@ static void uart_wait_mode_change(uint8_t port,uint8_t mode, uint32_t *check_add
 {
 
 
-  printf("uart_wait_mode_change(port=%d, mode=%d, check_addr=%p)\n", port, mode, check_addr);
+  DBG_PRINT("uart_wait_mode_change(port=%d, mode=%d, check_addr=%p)\n", port, mode, check_addr);
   uint8_t current_mode = sil_rew_mem((uint32_t *)EV3_SENSOR_MODE_INX(port));
-  printf("current_mode: %d\n", current_mode);
   if ( current_mode != mode ) {
+    DBG_PRINT("current_mode=%d, mode=%d\n", current_mode, mode);
     /* モードが切り替わった*/
     if ( fg_wait_mode_change_func ) {
       printf("fg_wait_mode_change_func()\n");

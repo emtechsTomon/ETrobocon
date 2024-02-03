@@ -119,7 +119,7 @@ sil_reb_mem(const uint8_t *mem)
 Inline void
 sil_wrb_mem(uint8_t *mem, uint8_t data)
 {
-        DBG_PRINT("mem=%p, data=%u\n", mem, data);
+  DBG_PRINT("mem=*(%p), data=%u\n", mem, data);
 	*((volatile uint8_t *) mem) = data;
 	SilCallWriteHook(1,(uint32)mem,(void*)&data);
 }
@@ -142,7 +142,7 @@ sil_reh_mem(const uint16_t *mem)
 Inline void
 sil_wrh_mem(uint16_t *mem, uint16_t data)
 {
-        DBG_PRINT("mem=%p, data=%u\n", mem, data);
+  DBG_PRINT("mem=%p, data=%u\n", mem, data);
 	*((volatile uint16_t *) mem) = data;
 	SilCallWriteHook(2,(uint32)mem,(void*)&data);
 }
@@ -220,6 +220,7 @@ sil_wrh_bem(uint16_t *mem, uint16_t data)
 Inline uint32_t
 sil_rew_mem(const uint32_t *mem)
 {
+  DBG_PRINT("*mem=*(%p)\n", mem);
 	uint32_t	data;
 
 	data = *((const volatile uint32_t *) mem);
@@ -229,7 +230,7 @@ sil_rew_mem(const uint32_t *mem)
 Inline void
 sil_wrw_mem(uint32_t *mem, uint32_t data)
 {
-        DBG_PRINT("mem=%p, data=%u\n", mem, data);
+  DBG_PRINT("*mem=*(%p), data=%u\n", mem, data);
 	*((volatile uint32_t *) mem) = data;
 	SilCallWriteHook(4,(uint32)mem,&data);
 }

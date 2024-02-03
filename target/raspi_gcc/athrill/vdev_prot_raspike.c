@@ -83,7 +83,7 @@ static char previous_sent_buffer[VDEV_TX_DATA_SIZE];
 static void raspike_uart_wait_mode_change(uint8_t port,uint8_t mode, uint32_t *check_addr)
 { 
 
-  DBG_PRINT("\n");
+  DBG_PRINT("port=%d, mode=%d, *checkaddr=*(%p)\n", port, mode, check_addr);
   /* まずvalueを通信上使われない999999に変更する */ 
   sil_wrw_mem(check_addr,RASPIKE_NOT_USED);
 
@@ -96,7 +96,8 @@ static void raspike_uart_wait_mode_change(uint8_t port,uint8_t mode, uint32_t *c
     
   do {
     uint32_t data = sil_rew_mem(addr);
-    //printf("port=%d val=%d\n",port,data);
+    DBG_PRINT("port=%d val=%d\n",port,data);
+    // printf("port=%d val=%d\n",port,data);
     if ( data != RASPIKE_NOT_USED ) {
       break;
     }
@@ -144,6 +145,7 @@ static struct timespec previous_sent = {0};
 
 static void save_sent_time(void)
 {
+  DBG_PRINT("\n");
 	clock_gettime(CLOCK_MONOTONIC,&previous_sent);
 }
 
@@ -163,6 +165,7 @@ static uint32 get_msec_from_previous_time(const struct timespec *now,const struc
 
 static void disable_interrupt(sigset_t *old)
 {
+  DBG_PRINT("\n");
   sigset_t sigset;
   sigemptyset(&sigset);
 
@@ -242,7 +245,7 @@ static RasPikeCommand send_order[] = {
 /* IOメモリへの書き込み */
 Std_ReturnType vdevProtRaspikeSilCb(int size, uint32 addr, void *data)
 {
-  DBG_PRINT("vdevProtRaspikeSlibCb: size=%d, addr=%u, data=%p\n", size, addr, data);
+  DBG_PRINT("size=%d, addr=%x, *data=*(%p)\n", size, addr, data);
   int len;
   static int is_first_call = 0;
 
@@ -260,6 +263,7 @@ Std_ReturnType vdevProtRaspikeSilCb(int size, uint32 addr, void *data)
   if ( size != 1 ) return STD_E_OK;
 
   if (addr == VDEV_TX_FLAG(0)) {
+    DBG_PRINT("addr=%x\n", addr);
     sigset_t old_set;
     disable_interrupt(&old_set);
     
@@ -268,7 +272,7 @@ Std_ReturnType vdevProtRaspikeSilCb(int size, uint32 addr, void *data)
     if ( previous_sent.tv_sec == 0 ) {
       save_sent_time();
     }
-    //    printf("Time:%d\n",get_time_from_previous_sending());
+       printf("Time:%d\n",get_time_from_previous_sending());
     
     // Check Difference
     int i;
@@ -307,6 +311,7 @@ Std_ReturnType vdevProtRaspikeSilCb(int size, uint32 addr, void *data)
 	  nanosleep(&wait,0);
 
 	  if ( !send_order[i].do_wait_ack ) {
+      DBG_PRINT("send_order[%d].do_wait_ack=%d\n", i, send_order[i].do_wait_ack);
 	    break;
 	  }
 	  timespec_get(&now, TIME_UTC);
@@ -321,25 +326,30 @@ Std_ReturnType vdevProtRaspikeSilCb(int size, uint32 addr, void *data)
 	  }
 	  pthread_mutex_lock(&mutex);
 
+    int cnt = 0;
 	  while (1) {
+      if (!(cnt % 10)) DBG_PRINT("cnt=%d\n", cnt++);
 	    if ( *p ) {
+        DBG_PRINT("*p=%u\n", *p);
 	      can_exit = 1;
 	      break;
 	    }
 	    int ret = pthread_cond_timedwait(&cond,&mutex,&next);
 	    if ( ret == ETIMEDOUT ) {
+        DBG_PRINT("ret=%d == ETIMEOUT\n", ret);
 	      /* Retry */
 	      timespec_get(&now, TIME_UTC);	      
-	      //printf("Resend %d %d.%d\n",send_idx,now.tv_sec,now.tv_nsec/1000000);
+	      printf("Resend %d %d.%d\n",send_idx,now.tv_sec,now.tv_nsec/1000000);
 	      break;
 	    }
 	  }
 	  pthread_mutex_unlock(&mutex);	  
 
 	  if ( can_exit ) {
+      DBG_PRINT("can_exit\n");
 	    struct timespec cur;
 	    timespec_get(&cur, TIME_UTC);	      
-	    //	    printf("Cmd=%d spends %d msec\n",send_idx,get_msec_from_previous_time(&cur,&now));
+	    	    printf("Cmd=%d spends %d msec\n",send_idx,get_msec_from_previous_time(&cur,&now));
 	    break;
 	  }
 	} while(1);
@@ -349,6 +359,7 @@ Std_ReturnType vdevProtRaspikeSilCb(int size, uint32 addr, void *data)
       }
     }
     if ( k != 0 ) {
+      DBG_PRINT("k=%d != 0\n", k);
       //      len = cur_com->send(buf,k);
     } else {
       len = cur_com->send(makeCommand(127,0,buf),3);
@@ -361,6 +372,7 @@ Std_ReturnType vdevProtRaspikeSilCb(int size, uint32 addr, void *data)
 
     // Clear reset area
     if ( reset_area_off && reset_area_size ) {
+      DBG_PRINT("rest_area_off=%u && reset_area_size=%u\n", reset_area_off, reset_area_size);
       memset((char*)(VDEV_TX_DATA_BASE+reset_area_off),0,reset_area_size);
     }
 

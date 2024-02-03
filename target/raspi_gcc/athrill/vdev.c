@@ -10,6 +10,7 @@
 #include "vdev_com_udp.h"
 #include "vdev_com_serial.h"
 
+#define DBG_PRINT(...)     printf("%s(%d) %s:", __FILE__, __LINE__, __func__), printf(__VA_ARGS__)
 
 /* assume this area is cleared by C runtime */
 unsigned char athrill_vdev_mem[VDEV_RX_DATA_SIZE+VDEV_TX_FLAG_SIZE+VDEV_TX_FLAG_SIZE];
@@ -63,8 +64,10 @@ int initialize_vdev(void)
 
   if (cpuemu_get_devcfg_string("DEVICE_CONFIG_VDEV_COM", &comMethod) == STD_E_OK) {
     if ( !strcmp(comMethod,"UDP") ) {
+      DBG_PRINT("UDP, current_com=&VdevComUDP\n");
       current_com = &VdevComUDP;
     } else if ( !strcmp(comMethod,"SERIAL")) {
+      DBG_PRINT("SERIAL, current_com=&VdevComSerial\n");
       current_com = &VdevComSerial;
     }
   }

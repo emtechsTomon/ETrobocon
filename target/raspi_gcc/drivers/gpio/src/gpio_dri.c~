@@ -12,7 +12,10 @@
 #include "ev3_vdev.h"
 #include "prc_config.h"
 
+#define DBG_PRINT(...)     printf("%s(%d) %s:", __FILE__, __LINE__, __func__), printf(__VA_ARGS__)
+
 bool_t gpio_get_value(uint32_t pin) {
+  DBG_PRINT("pin=%u\n", pin);
 	bool_t ret = FALSE;
 	uint32_t base = pin / EV3_GPIO_PIN_BASE_SIZE;
 	uint32_t index = pin % EV3_GPIO_PIN_BASE_SIZE;
@@ -32,6 +35,7 @@ bool_t gpio_get_value(uint32_t pin) {
 }
 
 void gpio_set_value(uint32_t pin, bool_t value) {
+  DBG_PRINT("pin=%u, value=%d\n", pin, value);
 	uint32_t base = pin / EV3_GPIO_PIN_BASE_SIZE;
 	uint32_t index = pin % EV3_GPIO_PIN_BASE_SIZE;
 	uint8_t * addr;
@@ -58,6 +62,7 @@ void gpio_set_value(uint32_t pin, bool_t value) {
 }
 void gpio_out_flush(void)
 {
+  DBG_PRINT("\n");
 	disable_int_all();
 	lock_cpu();
 	sil_wrb_mem((void*)VDEV_TX_FLAG_BASE, 1);
