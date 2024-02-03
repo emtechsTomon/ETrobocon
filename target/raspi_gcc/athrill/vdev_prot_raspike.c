@@ -242,7 +242,7 @@ static RasPikeCommand send_order[] = {
 /* IOメモリへの書き込み */
 Std_ReturnType vdevProtRaspikeSilCb(int size, uint32 addr, void *data)
 {
-  printf("in vdevProtRaspikeSlibCb(size=%d, addr=%lu, data=%p)\n", size, addr, data);
+  DBG_PRINT("vdevProtRaspikeSlibCb: size=%d, addr=%u, data=%p\n", size, addr, data);
   int len;
   static int is_first_call = 0;
 
