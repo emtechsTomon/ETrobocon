@@ -272,7 +272,8 @@ Std_ReturnType vdevProtRaspikeSilCb(int size, uint32 addr, void *data)
     if ( previous_sent.tv_sec == 0 ) {
       save_sent_time();
     }
-       printf("Time:%d\n",get_time_from_previous_sending());
+      //  printf("Time:%d\n",get_time_from_previous_sending());
+      DBG_PRINT("Time:%d\n", get_time_from_previous_sending();)
     
     // Check Difference
     int i;
@@ -314,6 +315,7 @@ Std_ReturnType vdevProtRaspikeSilCb(int size, uint32 addr, void *data)
       DBG_PRINT("send_order[%d].do_wait_ack=%d\n", i, send_order[i].do_wait_ack);
 	    break;
 	  }
+    DBG_PRINT("send_order[%d].do_wait_ack=%d\n", i, send_order[i].do_wait_ack);
 	  timespec_get(&now, TIME_UTC);
 	  /* Wait Ack */
 	  volatile uint32_t *p = (ack_received+send_idx); 

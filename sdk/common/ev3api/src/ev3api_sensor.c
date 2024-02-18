@@ -47,7 +47,7 @@ int16_t analog_sensor_get_pin1(sensor_port_t port) {
 static
 void uart_sensor_fetch_data(sensor_port_t port, uint8_t mode, void *dest, SIZE size)
 {
-        printf("in uart_sensor_fetch_data(port=%d, mode=%d, dest=%p, size=%d)\n", port, mode, dest, size);
+  printf("in uart_sensor_fetch_data(port=%d, mode=%d, dest=%p, size=%d)\n", port, mode, dest, size);
 	sensor_type_t type = ev3_sensor_get_type(port);
 	switch (type) {
 		case ULTRASONIC_SENSOR:
@@ -66,9 +66,9 @@ void uart_sensor_fetch_data(sensor_port_t port, uint8_t mode, void *dest, SIZE s
 			break;
 		case COLOR_SENSOR:
 			{
-                                printf("case COLOR_SENSOR\n");
+        printf("case COLOR_SENSOR\n");
 				uint8_t index = get_sensor_index(port, type);
-                                printf("index: %d \n", index);
+        printf("index: %d \n", index);
 				if (index != -1) {
 				  uart_dri_get_data_color(port,index, mode, dest, size);
 				}
@@ -132,35 +132,35 @@ void _initialize_ev3api_sensor() {
 
 ER ev3_sensor_config(sensor_port_t port, sensor_type_t type)
 {
-        printf("in ev3_sensor_config(port=%d, type=%d)\n", port, type);
+  printf("in ev3_sensor_config(port=%d, type=%d)\n", port, type);
 	ER ercd;
 	CHECK_PORT(port);
 
 
 	/* RaSpike: send config when config is changed */
-        printf("[check] sensors[port]: %d\n", sensors[port]);
+  printf("[check] sensors[port=%d]: %d\n", port, sensors[port]);
 	if ( sensors[port] != type ) {
 	  uart_dri_config_sensor(port,type);
 	  uart_dri_set_sensor_mode(port,-1);
 	}
 	
 	sensors[port] = type;
-        printf("[check] sensors[port]: %d\n", sensors[port]);
+  printf("[check] sensors[port=%d]: %d\n", port, sensors[port]);
 	ercd = E_OK;
 
 error_exit:
-        printf("return ercd=%d\n", ercd);
+  printf("return ercd=%d\n", ercd);
 	return ercd;
 }
 
 ER_UINT ev3_sensor_get_type(sensor_port_t port) {
-        printf("in ev3_sensor_get_type()\n");
+  printf("in ev3_sensor_get_type()\n");
 	ER ercd;
 
 //	lazy_initialize();
-        printf("CHECK_PORT(%d)\n", port);
+  printf("CHECK_PORT(%d)\n", port);
 	CHECK_PORT(port);
-	printf("return sensors[port]: %d\n", sensors[port]);
+	printf("return sensors[port=%d]: %d\n", port, sensors[port]);
 	return sensors[port];
 
 error_exit:
@@ -232,19 +232,19 @@ error_exit:
 }
 
 void ev3_color_sensor_get_rgb_raw(sensor_port_t port, rgb_raw_t *val) {
-        printf("in ev3_color_sensor_get_rgb_raw()\n");
+  printf("in ev3_color_sensor_get_rgb_raw()\n");
 	ER ercd;
 
 //	lazy_initialize();
-        printf("CHECK_PORT(%d)\n", port);
+  printf("CHECK_PORT(%d)\n", port);
 	CHECK_PORT(port);
-        printf("CHECK_COND()\n");
+  printf("CHECK_COND()\n");
 	CHECK_COND(ev3_sensor_get_type(port) == COLOR_SENSOR, E_OBJ);
 
 	/* RaSpike */
-        printf("set_sensor_mode()\n");
+  printf("set_sensor_mode()\n");
 	set_sensor_mode(port,COL_RGBRAW);
-        printf("uart_sensor_fetch_data()\n");
+  printf("uart_sensor_fetch_data()\n");
 	uart_sensor_fetch_data(port, COL_RGBRAW, val, sizeof(rgb_raw_t));
 
     return;

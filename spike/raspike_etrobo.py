@@ -283,9 +283,9 @@ async def receiver():
 
 
 async def send_data(cmd, val):
-    print("in send_data()")#
+    #print("in send_data()")#
     sendData = "@{:0=4}:{:0=6}".format(cmd, int(val))
-    print(sendData)
+    #print(sendData)
     ser.write(sendData)
     #高速で送るとパケットが落ちるため、0.5msec休ませる
     await uasyncio.sleep(0.0005)
@@ -312,9 +312,12 @@ async def notifySensorValues():
     long_period_count = 0
     #100msec周期
     long_period_time_us = 100000
+    #counter
+    rep_count = 0
     while True:
         # 次の更新タイミング  ここでは10msec
-        next_time = time.ticks_us() + 10 * 1000
+        #next_time = time.ticks_us() + 10 * 1000
+        next_time = time.ticks_us() + 100 * 1000
 
 
 
@@ -356,7 +359,8 @@ async def notifySensorValues():
                 await send_data(5, g / 4)
                 await send_data(6, b / 4)
         else:#
-            print("color_sensor_mode: " + str(color_sensor_mode))#
+            if rep_count % 5 == 0:
+                print("color_sensor_mode: " + str(color_sensor_mode))#
 
         # 超音波センサー
         if ultrasonic_sensor_mode == 1:
@@ -368,7 +372,8 @@ async def notifySensorValues():
         elif ultrasonic_sensor_mode == 2:
            await send_data(23, ultrasonic_sensor.get())
         else:#
-            print("ultrasonic_sensor_mode: " + str(ultrasonic_sensor_mode))#
+            if rep_count % 5 == 0:
+                print("ultrasonic_sensor_mode: " + str(ultrasonic_sensor_mode))#
 
         # モーター出力
         await send_data(64, motor_rot_A.get()[0] * invert_A)
@@ -460,8 +465,9 @@ async def notifySensorValues():
         if time_diff < 0:
             time_diff = 0
         await uasyncio.sleep_ms(int(time_diff / 1000))
-      
-        print("while: end")#
+
+        rep_count = rep_count + 1
+        #print("while: end")#
 
 
 def stop_all():

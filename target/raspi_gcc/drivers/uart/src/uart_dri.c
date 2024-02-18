@@ -123,7 +123,7 @@ typedef enum {
 
 void uart_dri_get_data_color(uint8_t port,uint8_t index, uint8_t mode, void *dest, SIZE size)
 {
-        printf("uart_dri_get_data_color(port=%d, index=%d, mode=%d, dest=%p, size=%d)\n", port, index, mode, dest, size);
+  printf("uart_dri_get_data_color(port=%d, index=%d, mode=%d, dest=%p, size=%d)\n", port, index, mode, dest, size);
 	uint8_t *data8 = (uint8_t*)dest;
 	uint16_t *array = (uint16_t*)dest;
 	DRI_COLOR_SENSOR_MODES dri_mode = mode;
@@ -139,7 +139,7 @@ void uart_dri_get_data_color(uint8_t port,uint8_t index, uint8_t mode, void *des
 	  uart_wait_mode_change(port,mode,(uint32_t*)EV3_SENSOR_ADDR_COLOR(index));	  
 	  *data8 = (uint8_t)sil_rew_mem( (const uint32_t *)EV3_SENSOR_ADDR_COLOR(index));
 	} else {
-          printf("uart_wait_mode_change()\n");
+    printf("uart_wait_mode_change()\n");
 	  uart_wait_mode_change(port,mode,(uint32_t*)EV3_SENSOR_ADDR_RGB_R(index));
 	  array[0] = (uint16_t)sil_rew_mem( (const uint32_t *)EV3_SENSOR_ADDR_RGB_R(index));
           printf("array[0]: %d", array[0]);  
