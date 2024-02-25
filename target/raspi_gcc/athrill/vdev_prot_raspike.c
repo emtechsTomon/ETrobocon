@@ -273,7 +273,7 @@ Std_ReturnType vdevProtRaspikeSilCb(int size, uint32 addr, void *data)
       save_sent_time();
     }
       //  printf("Time:%d\n",get_time_from_previous_sending());
-      DBG_PRINT("Time:%d\n", get_time_from_previous_sending();)
+      DBG_PRINT("Time:%d\n", get_time_from_previous_sending());
     
     // Check Difference
     int i;

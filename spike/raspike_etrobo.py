@@ -104,7 +104,7 @@ def wait_serial_ready():
 
 
 async def wait_read(ser, size):
-    print("in wait_read()")#
+    #    print("in wait_read()")#
     global last_command_time
     while True:
         buf = ser.read(size)
@@ -317,7 +317,16 @@ async def notifySensorValues():
     while True:
         # 次の更新タイミング  ここでは10msec
         #next_time = time.ticks_us() + 10 * 1000
-        next_time = time.ticks_us() + 100 * 1000
+        #next_time = time.ticks_us() + 15 * 1000
+        #next_time = time.ticks_us() + 20 * 1000    #0/10
+        next_time = time.ticks_us() + 25 * 1000    #9/15
+        #next_time = time.ticks_us() + 30 * 1000
+        #next_time = time.ticks_us() + 35 * 1000
+        #next_time = time.ticks_us() + 40 * 1000
+        #next_time = time.ticks_us() + 45 * 1000
+        #next_time = time.ticks_us() + 50 * 1000   #5/5
+        #next_time = time.ticks_us() + 75 * 1000   #7/10
+        #next_time = time.ticks_us() + 100 * 1000  #10/10
 
 
 
@@ -361,6 +370,8 @@ async def notifySensorValues():
         else:#
             if rep_count % 5 == 0:
                 print("color_sensor_mode: " + str(color_sensor_mode))#
+                print("await uasyncio.sleep_ms(100)")#
+                await uasyncio.sleep_ms(100)#
 
         # 超音波センサー
         if ultrasonic_sensor_mode == 1:
@@ -374,6 +385,8 @@ async def notifySensorValues():
         else:#
             if rep_count % 5 == 0:
                 print("ultrasonic_sensor_mode: " + str(ultrasonic_sensor_mode))#
+                print("await uasyncio.sleep_ms(100)")#
+                await uasyncio.sleep_ms(100)#
 
         # モーター出力
         await send_data(64, motor_rot_A.get()[0] * invert_A)
@@ -389,7 +402,8 @@ async def notifySensorValues():
 
         #タッチセンサー
         val = touch_sensor.is_pressed()
-        print("val = touch_sensor.is_pressed(): " + str(val))#
+        if rep_count % 5 == 0:
+            print("val = touch_sensor.is_pressed(): " + str(val))#
         if touch_sensor_value != val :
             touch_sensor_value = val
             sendVal = 0
@@ -461,7 +475,7 @@ async def notifySensorValues():
             long_period_count = long_period_count + 1
 
         time_diff = next_time - time.ticks_us()
-        #        print("timediff={}".format(time_diff))
+        print("timediff={}".format(time_diff))
         if time_diff < 0:
             time_diff = 0
         await uasyncio.sleep_ms(int(time_diff / 1000))
