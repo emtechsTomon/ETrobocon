@@ -306,17 +306,26 @@ async def notifySensorValues():
             if color_val is not None:
             # ambient
                 await send_data(1, color_val[0])
+            else:
+                await send_data(1, DMY_CV)
+                print('mode=%d' %(color_sensor_mode))
         elif color_sensor_mode == 2:
             color_val = color_sensor.get()
             if color_val is not None:
                 # color
                 # TODO:Convert to EV3 Value
                 await send_data(2, color_val[0])
+            else:
+                await send_data(2, DMY_CV)
+                print('mode=%d' %(color_sensor_mode))
         elif color_sensor_mode == 3:
             color_val = color_sensor.get()
             if color_val is not None:
             # Reflect
                 await send_data(3, color_val[0])
+            else:
+                await send_data(3, DMY_CV)
+                print('mode=%d' %(color_sensor_mode))
         elif color_sensor_mode == 4:
             color_val = color_sensor.get()
             if color_val[0] is not None and len(color_val) == 4 and color_val[2] is not None:
@@ -326,6 +335,17 @@ async def notifySensorValues():
                 await send_data(4, r / 4)
                 await send_data(5, g / 4)
                 await send_data(6, b / 4)
+            else:
+                r = DMY_CV
+                g = DMY_CV
+                b = DMY_CV
+                await send_data(4, r / 4)
+                await send_data(5, g / 4)
+                await send_data(6, b / 4)
+                print('mode=%d' %(color_sensor_mode))
+        else:
+            await send_data(2, DMY_CV)
+            print('mode=%d' %(color_sensor_mode))
 
         # 超音波センサー
         if ultrasonic_sensor_mode == 1:
